@@ -1,4 +1,6 @@
+from config.db import db
 from flask import Blueprint
+from ..models.user import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
