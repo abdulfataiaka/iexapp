@@ -45,3 +45,21 @@ class TestStocksController(BaseTest):
             with self.app.app_context():
                 amount = User.query.get(1).wallet.amount
             self.assertEqual(amount, 4000)
+
+    def test_stock_sell(self):
+        self.create_user(username='newuser', password='password', amount=1000, volume=1000)
+        token = Helper.token(1, 'newuser')
+        headers = dict(Token=token)
+
+        with requests_mock.mock() as mock:
+            symbol = 'aapl'
+            volume = 10
+            url = IEXCloud.url(f'/stock/{symbol}/price')
+            mock.get(url, text='100.0')
+
+            # make request actions
+            response = self.client.post(f'/stocks/{symbol}/sell/{volume}', headers=headers)
+            self.assertEqual(response.status_code, 200)
+            with self.app.app_context():
+                amount = User.query.get(1).wallet.amount
+            self.assertEqual(amount, 2000)

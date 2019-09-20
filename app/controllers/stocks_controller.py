@@ -40,4 +40,18 @@ def stock_purchase(symbol, volume):
         total_price=request.total
     )
 
-    return jsonify(dict(message=f'Stock purchase successful', data=data))
+    return jsonify(dict(message=f'Shares purchased successfully', data=data))
+
+
+@bp.route('/<symbol>/sell/<int:volume>', methods=['POST'])
+@AuthMiddleware.verify_token
+@ValidatorMiddleware.stock_sell
+def stock_sell(symbol, volume):
+    StocksControllerHelper.finalize_sell(request)
+    data = dict(
+        symbol=request.symbol,
+        volume=request.volume,
+        wallet_amount=request.user.wallet.amount,
+        total_price=request.total
+    )
+    return jsonify(dict(message=f'Shares sold successfully', data=data))

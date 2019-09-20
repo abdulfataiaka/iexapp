@@ -5,6 +5,7 @@ from app.models.stock import Stock
 from app.helpers.helper import Helper
 from app.helpers.iex_cloud import IEXCloud
 from app.helpers.validator import Validator
+from app.models.user_stock import UserStock
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -62,8 +63,8 @@ class ValidatorMiddleware:
         def wrapper(*args, **kwargs):
             symbol = request.view_args.get('symbol')
             volume = request.view_args.get('volume')
-
             stock = Stock.query.filter_by(symbol=symbol).first()
+
             if not stock:
                 return jsonify(dict(error='Symbol provided not yet support')), 404
 
@@ -72,7 +73,7 @@ class ValidatorMiddleware:
                 return jsonify(dict(error='Stock price could not be fetched')), 500
 
             if volume > stock.volume:
-                return jsonify(dict(error='Volume is more than available stock volume')), 400
+                return jsonify(dict(error='Shares volume is more than available stock volume')), 400
 
             total = Helper.amount(volume * price)
             amount = request.user.wallet.amount
@@ -84,5 +85,37 @@ class ValidatorMiddleware:
             request.stock = stock
             request.price = price
             request.total = total
+            return func(*args, **kwargs)
+        return wrapper
+
+    @classmethod
+    def stock_sell(cls, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            user_id = request.user.id
+            symbol = request.view_args.get('symbol')
+            volume = request.view_args.get('volume')
+            stock = Stock.query.filter_by(symbol=symbol).first()
+
+            if not stock:
+                return jsonify(dict(error='Symbol provided not yet support')), 404
+
+            user_stock = UserStock.query.filter_by(user_id=user_id, symbol=symbol).first()
+            if not user_stock:
+                return jsonify(dict(error='No shares has been acquired for symbol')), 400
+
+            price = IEXCloud.price(symbol)
+            if not price:
+                return jsonify(dict(error='Stock price could not be fetched')), 500
+
+            if volume > user_stock.volume:
+                return jsonify(dict(error='Shares volume is more than available stock volume')), 400
+
+            request.symbol = symbol
+            request.volume = volume
+            request.stock = stock
+            request.user_stock = user_stock
+            request.price = price
+            request.total = Helper.amount(volume * price)
             return func(*args, **kwargs)
         return wrapper

@@ -22,6 +22,23 @@ class StocksControllerHelper:
         cls.update_transaction(user.id, symbol, volume, price, total, 'purchase')
 
     @classmethod
+    def finalize_sell(cls, request):
+        user = request.user
+        stock = request.stock
+        price = request.price
+        total = request.total
+        symbol = request.symbol
+        volume = request.volume
+        user_stock = request.user_stock
+
+        request.user.wallet.amount = Helper.amount(user.wallet.amount + total)
+        request.stock.volume = stock.volume + volume
+        request.user_stock.volume = user_stock.volume - volume
+        db.session.commit()
+        cls.update_transaction(user.id, symbol, volume, price, total, 'sell')
+
+
+    @classmethod
     def update_user_stock(cls, user_id, symbol, volume):
         user_stock = UserStock.query.filter_by(symbol=symbol, user_id=user_id).first()
         if user_stock is None:
