@@ -10,7 +10,7 @@ class Transaction(db.Model):
     volume = db.Column(db.Integer, nullable=False)
     stock_price = db.Column(db.Float, nullable=False)
     total_price = db.Column(db.Float, nullable=False)
-    datetime = db.Column(db.DATETIME, nullable=False)
+    datetime = db.Column(db.TIMESTAMP, nullable=False)
     txntype = db.Column(db.String, nullable=False)
 
     def serialize(self):
