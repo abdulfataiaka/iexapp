@@ -4,16 +4,16 @@ import requests
 
 class IEXCloud:
     @classmethod
-    def get(cls, path):
+    def url(cls, path):
         token = os.getenv('IEX_CLOUD_TOKEN')
         baseurl = os.getenv('IEX_CLOUD_BASEURL')
-        response = requests.get(f'{baseurl}{path}?token={token}')
-        return response
+        return f'{baseurl}{path}?token={token}'
 
     @classmethod
     def price(cls, symbol):
         try:
-            response = cls.get(f'/stock/{symbol}/price')
+            url = cls.url(f'/stock/{symbol}/price')
+            response = requests.get(url)
             return float(response.text)
-        except:
+        except Exception:
             return None
