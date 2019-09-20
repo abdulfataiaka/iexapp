@@ -1,0 +1,13 @@
+language: python
+
+python:
+  - "3.6"
+
+env:
+  - TEST_DATABASE_URL="sqlite:////${TRAVIS_BUILD_DIR}/db/test.sqlite"
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - python -m unittest discover -s ./test

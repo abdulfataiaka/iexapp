@@ -2,6 +2,9 @@
 
 A simple stock exchange application
 
+[![Build Status](https://travis-ci.org/abdulfataiaka/iexapp.svg?branch=master)](https://travis-ci.org/abdulfataiaka/iexapp)
+
+
 Resource Links
 - [Hosted Application](https://iexapp.herokuapp.com/)
 - [Postman Documentation](https://documenter.getpostman.com/view/2846783/SVmyQwxE)
