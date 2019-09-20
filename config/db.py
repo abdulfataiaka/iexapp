@@ -5,16 +5,16 @@ db = SQLAlchemy()
 
 class DB:
     @classmethod
-    def config(cls):
+    def config(cls, dburl):
         return {
-            'SQLALCHEMY_DATABASE_URI': os.getenv('DATABASE_URL'),
+            'SQLALCHEMY_DATABASE_URI': dburl,
             'SQLALCHEMY_TRACK_MODIFICATIONS': False
         }
 
     @classmethod
-    def init(cls, app):
+    def init(cls, app, dburl):
         with app.app_context():
-            app.config.from_mapping(cls.config())
+            app.config.from_mapping(cls.config(dburl))
             db.init_app(app)
 
     @classmethod
