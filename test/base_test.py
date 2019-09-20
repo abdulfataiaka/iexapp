@@ -3,6 +3,7 @@ from config.db import db
 from app import create_app
 from unittest import TestCase
 from app.models.user import User
+from app.models.wallet import Wallet
 from app.models.stock import Stock
 from werkzeug.security import generate_password_hash
 
@@ -30,6 +31,10 @@ class BaseTest(TestCase):
         with self.app.app_context():
             user = User(username=username, password=generate_password_hash(password))
             db.session.add(user)
+            db.session.commit()
+
+            wallet = Wallet(user_id=user.id)
+            db.session.add(wallet)
             db.session.commit()
 
     def seed_stocks(self):
