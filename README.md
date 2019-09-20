@@ -29,6 +29,14 @@ The wallet deposit feature is just to show how the amount a user have with us on
 Only the symbols for `Apple (aapl)` and `Uber (uber)` are supported on the platform, as these are the only two seeded into the database. This means that any other symbol used will cause an error message to be returned.
 
 
+## Technologies
+
+- Flask
+- SQLAlchemy
+- Gunicorn
+- PIP
+
+
 ## Setup development environment
 
 The application is a flask application which depends on Werkzeug python toolkit and Jinja2 template engine. The database abstraction and ORM library used is SQLAlchemy.
