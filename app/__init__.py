@@ -3,7 +3,8 @@ from cli import dbsetup
 from config.db import DB
 from dotenv import load_dotenv
 from flask import Flask, jsonify
-from .controllers.auth_controller import bp as auth
+from app.controllers.auth_controller import bp as auth
+from app.controllers.stocks_controller import bp as stocks
 
 load_dotenv()
 
@@ -13,6 +14,7 @@ def create_app(config=None):
 
     # register blueprints
     app.register_blueprint(auth)
+    app.register_blueprint(stocks)
 
     # setting up database
     dburl = os.getenv('DATABASE_URL')

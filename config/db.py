@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class DB:
     @classmethod
     def config(cls, dburl):
@@ -16,8 +17,3 @@ class DB:
         with app.app_context():
             app.config.from_mapping(cls.config(dburl))
             db.init_app(app)
-
-    @classmethod
-    def setup(cls):
-        db.drop_all()
-        db.create_all()
