@@ -1,5 +1,6 @@
 from config.db import db
 
+
 class Stock(db.Model):
     __tablename__ = 'stocks'
 

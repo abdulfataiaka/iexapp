@@ -1,5 +1,7 @@
 import requests_mock
+from app.models.user import User
 from test.base_test import BaseTest
+from app.helpers.helper import Helper
 from app.helpers.iex_cloud import IEXCloud
 
 class TestStocksController(BaseTest):
@@ -25,3 +27,21 @@ class TestStocksController(BaseTest):
             self.assertEqual(response.status_code, 200)
             self.assertTrue('price' in response.json)
             self.assertEqual(response.json['price'], 34.5)
+
+    def test_stock_purchase(self):
+        self.create_user(username='newuser', password='password', amount=5000)
+        token = Helper.token(1, 'newuser')
+        headers = dict(Token=token)
+
+        with requests_mock.mock() as mock:
+            symbol = 'aapl'
+            volume = 10
+            url = IEXCloud.url(f'/stock/{symbol}/price')
+            mock.get(url, text='100.0')
+
+            # make request actions
+            response = self.client.post(f'/stocks/{symbol}/purchase/{volume}', headers=headers)
+            self.assertEqual(response.status_code, 200)
+            with self.app.app_context():
+                amount = User.query.get(1).wallet.amount
+            self.assertEqual(amount, 4000)

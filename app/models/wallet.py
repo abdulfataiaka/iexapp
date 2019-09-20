@@ -5,4 +5,4 @@ class Wallet(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True)
-    amount = db.Column(db.Integer, nullable=False, default=0)
+    amount = db.Column(db.Float, nullable=False, default=0)

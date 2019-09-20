@@ -4,6 +4,10 @@ import jwt
 
 class Helper:
     @classmethod
+    def amount(cls, value):
+        return float(f'{value:.2f}')
+
+    @classmethod
     def token(cls, uid, username):
         try:
             return jwt.encode(

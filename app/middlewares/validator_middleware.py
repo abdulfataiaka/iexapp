@@ -1,9 +1,11 @@
 from functools import wraps
-from flask import request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-
 from app.models.user import User
+from flask import request, jsonify
+from app.models.stock import Stock
+from app.helpers.helper import Helper
+from app.helpers.iex_cloud import IEXCloud
 from app.helpers.validator import Validator
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 class ValidatorMiddleware:
@@ -51,5 +53,36 @@ class ValidatorMiddleware:
 
             request.username = username
             request.password = generate_password_hash(password.strip())
+            return func(*args, **kwargs)
+        return wrapper
+
+    @classmethod
+    def stock_purchase(cls, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            symbol = request.view_args.get('symbol')
+            volume = request.view_args.get('volume')
+
+            stock = Stock.query.filter_by(symbol=symbol).first()
+            if not stock:
+                return jsonify(dict(error='Symbol provided not yet support')), 404
+
+            price = IEXCloud.price(symbol)
+            if not price:
+                return jsonify(dict(error='Stock price could not be fetched')), 500
+
+            if volume > stock.volume:
+                return jsonify(dict(error='Volume is more than available stock volume')), 400
+
+            total = Helper.amount(volume * price)
+            amount = request.user.wallet.amount
+            if total > amount:
+                return jsonify(dict(error=f'Wallet amount {amount} is less than the total price {total}')), 400
+
+            request.symbol = symbol
+            request.volume = volume
+            request.stock = stock
+            request.price = price
+            request.total = total
             return func(*args, **kwargs)
         return wrapper
