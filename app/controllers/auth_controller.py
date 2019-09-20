@@ -3,7 +3,7 @@ from app.models.user import User
 from app.models.wallet import Wallet
 from app.helpers.helper import Helper
 from flask import Blueprint, request, jsonify
-from app.middleware.validator_middleware import ValidatorMiddleware
+from app.middlewares.validator_middleware import ValidatorMiddleware
 
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')

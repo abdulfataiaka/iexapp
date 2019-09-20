@@ -4,7 +4,9 @@ from config.db import DB
 from dotenv import load_dotenv
 from flask import Flask, jsonify
 from app.controllers.auth_controller import bp as auth
+from app.controllers.users_controller import bp as users
 from app.controllers.stocks_controller import bp as stocks
+from app.controllers.wallets_controller import bp as wallets
 
 load_dotenv()
 
@@ -14,7 +16,9 @@ def create_app(config=None):
 
     # register blueprints
     app.register_blueprint(auth)
+    app.register_blueprint(users)
     app.register_blueprint(stocks)
+    app.register_blueprint(wallets)
 
     # setting up database
     dburl = os.getenv('DATABASE_URL')
