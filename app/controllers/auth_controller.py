@@ -1,5 +1,6 @@
 from config.db import db
 from app.models.user import User
+from app.models.wallet import Wallet
 from app.helpers.helper import Helper
 from flask import Blueprint, request, jsonify
 from app.middleware.validator_middleware import ValidatorMiddleware
@@ -23,5 +24,11 @@ def register():
     user = User(username=request.username, password=request.password)
     db.session.add(user)
     db.session.commit()
+
+    # creeate wallet for user
+    wallet = Wallet(user_id=user.id)
+    db.session.add(wallet)
+    db.session.commit()
+
     token = Helper.token(user.id, user.username)
     return jsonify(dict(message='Registration was successful', token=token)), 201
