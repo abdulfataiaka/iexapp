@@ -5,6 +5,7 @@ from unittest import TestCase
 from app.models.user import User
 from app.models.wallet import Wallet
 from app.models.stock import Stock
+from app.models.user_stock import UserStock
 from werkzeug.security import generate_password_hash
 
 class BaseTest(TestCase):
@@ -27,15 +28,18 @@ class BaseTest(TestCase):
             db.drop_all()
             db.create_all()
 
-    def create_user(self, username, password, amount=0):
+    def create_user(self, username, password, amount=0, volume=0):
         with self.app.app_context():
             user = User(username=username, password=generate_password_hash(password))
             db.session.add(user)
             db.session.commit()
 
             wallet = Wallet(user_id=user.id, amount=amount)
+            stock = UserStock(user_id=user.id, symbol='aapl', volume=volume)
             db.session.add(wallet)
+            db.session.add(stock)
             db.session.commit()
+
 
     def seed_stocks(self):
         with self.app.app_context():
