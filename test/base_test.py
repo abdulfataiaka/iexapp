@@ -27,18 +27,18 @@ class BaseTest(TestCase):
             db.drop_all()
             db.create_all()
 
-    def create_user(self, username, password):
+    def create_user(self, username, password, amount=0):
         with self.app.app_context():
             user = User(username=username, password=generate_password_hash(password))
             db.session.add(user)
             db.session.commit()
 
-            wallet = Wallet(user_id=user.id)
+            wallet = Wallet(user_id=user.id, amount=amount)
             db.session.add(wallet)
             db.session.commit()
 
     def seed_stocks(self):
         with self.app.app_context():
-            apple = Stock(symbol='aapl', volume=5000000)
+            apple = Stock(symbol='aapl', volume=100)
             db.session.add(apple)
             db.session.commit()
